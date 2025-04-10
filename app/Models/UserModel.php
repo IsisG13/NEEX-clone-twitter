@@ -15,4 +15,37 @@ class UserModel extends Model
         'email',
         'password',
     ];
+    protected $hidden = [
+        'password',
+        'remember_token',
+    ];
+    protected $casts = [
+        'email_verified_at' => 'datetime',
+    ];
+    public function tweets()
+    {
+        return $this->hasMany(Tweet::class);
+    }
+    public function comments()
+    {
+        return $this->hasMany(Comentarios::class, 'usuario_id');
+    }
+    public function following()
+    {
+        return $this->belongsToMany(
+            User::class,
+            'seguidores',
+            'seguidor_id',
+            'seguindo_id'
+        );
+    }
+    public function followers()
+    {
+        return $this->belongsToMany(
+            User::class,
+            'seguidores',
+            'seguidor_id',
+            'seguindo_id'
+        );
+    }
 }

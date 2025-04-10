@@ -5,12 +5,12 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Seguir extends Model
+class Follow extends Model
 {
     use HasFactory;
 
     protected $fillable = [
-        'seguidor_id',
-        'seguindo_id',
-        ];
+        'follower_id',
+        'followed_id',
+    ];
 }

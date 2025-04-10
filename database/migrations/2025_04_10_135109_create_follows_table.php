@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateSeguidoresTable extends Migration
+class CreateFollowsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,12 +13,12 @@ class CreateSeguidoresTable extends Migration
      */
     public function up()
     {
-        Schema::create('seguidores', function (Blueprint $table) {
+        Schema::create('follows', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('seguidor_id')->constrained('usuarios')->onDelete('cascade');
-            $table->foreignId('seguindo_id')->constrained('usuarios')->onDelete('cascade');
+            $table->foreignId('follower_id')->constrained('users')->onDelete('cascade');
+            $table->foreignId('followed_id')->constrained('users')->onDelete('cascade');
             $table->timestamps();
-            $table->unique(['seguidor_id', 'seguindo_id']);
+            $table->unique(['follower_id', 'followed_id']);
         });
     }
 
@@ -29,6 +29,6 @@ class CreateSeguidoresTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('seguidores');
+        Schema::dropIfExists('follows');
     }
 }

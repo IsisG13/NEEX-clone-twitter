@@ -9,6 +9,8 @@ class User extends Model
 {
     use HasFactory;
 
+    protected $table = 'userss'; // Especifica o nome da tabela
+
     protected $fillable = [
         'name',
         'email',

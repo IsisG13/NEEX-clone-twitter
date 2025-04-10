@@ -45,7 +45,7 @@ class User extends Authenticatable
             'follows',
             'follower_id',
             'followed_id'
-        );
+        )->withTimestamps()->using(Follow::class);
     }
 
     public function followers()
@@ -55,6 +55,6 @@ class User extends Authenticatable
             'follows',
             'followed_id',
             'follower_id'
-        );
+        )->withTimestamps()->using(Follow::class);
     }
 }

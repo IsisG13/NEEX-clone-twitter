@@ -23,11 +23,13 @@ class TweetRepository
     public function getFeedForUser(int $userId)
     {
         $user = User::find($userId);
+
         // Obter IDs dos usuários que o usuário atual segue
-        $followingIds = $user->following()->pluck('users.id')->toArray();
-        // Adicionar ID do próprio usuário para ver seus próprios tweets
+        $followingIds = $user->following()->pluck('userss.id')->toArray();
+
+        // Adicionar ID do próprio usuário
         $followingIds[] = $userId;
-        // Buscar tweets dos usuários seguidos + tweets próprios
+
         return $this->model->whereIn('user_id', $followingIds)
             ->with(['user', 'comments.user'])
             ->orderBy('created_at', 'desc')

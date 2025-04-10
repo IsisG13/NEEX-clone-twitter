@@ -29,14 +29,27 @@ class UserController extends Controller
     {
         $followerId = auth()->id();
         $followedId = $id;
-        $result = $this->userService->followUser($followerId, $followedId);
-        if (!$result) {
+
+        try {
+            $result = $this->userService->followUser($followerId, $followedId);
+
+            if (!$result) {
+                return response()->json([
+                    'message' => 'Você já segue este usuário ou está tentando seguir a si mesmo'
+                ], 400);
+            }
+
             return response()->json([
-                'message' => 'Não foi possível seguir este
-usuário'
-            ], 400);
+                'message' => 'Usuário seguido com sucesso',
+                'data' => $result
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Erro ao seguir usuário',
+                'error' => $e->getMessage()
+            ], 500);
         }
-        return response()->json(['message' => 'Usuário seguido com sucesso']);
     }
     public function unfollow(Request $request, $id)
     {
@@ -44,8 +57,7 @@ usuário'
         $followedId = $id;
         $result = $this->userService->unfollowUser($followerId, $followedId);
         return response()->json([
-            'message' => 'Deixou de seguir este usuário
-com sucesso'
+            'message' => 'Deixou de seguir este usuário com sucesso'
         ]);
     }
     public function following($id)

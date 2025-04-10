@@ -1,5 +1,6 @@
 <?php
 namespace App\Services;
+use App\Models\Follow;
 use App\Repositories\UserRepository;
 class UserService
 {
@@ -14,11 +15,26 @@ class UserService
     }
     public function followUser(int $followerId, int $followedId)
     {
-        // Não pode seguir a si mesmo
+        // Verifica se o usuário está tentando seguir a si mesmo
         if ($followerId === $followedId) {
             return false;
         }
-        return $this->userRepository->follow($followerId, $followedId);
+
+        // Verifica se o usuário já está sendo seguido
+        $alreadyFollowing = Follow::where([
+            'follower_id' => $followerId,
+            'followed_id' => $followedId
+        ])->exists();
+
+        if ($alreadyFollowing) {
+            return false;
+        }
+
+        // Cria o novo relacionamento
+        return Follow::create([
+            'follower_id' => $followerId,
+            'followed_id' => $followedId
+        ]);
     }
     public function unfollowUser(int $followerId, int $followedId)
     {

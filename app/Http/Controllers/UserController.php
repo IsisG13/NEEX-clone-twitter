@@ -1,5 +1,6 @@
 <?php
 namespace App\Http\Controllers;
+use App\Models\User;
 use App\Services\UserService;
 use Illuminate\Http\Request;
 class UserController extends Controller
@@ -25,49 +26,46 @@ class UserController extends Controller
         }
         return response()->json(['user' => $user]);
     }
-    public function follow(Request $request, $id)
+    public function follow($id)
     {
-        $followerId = auth()->id();
-        $followedId = $id;
+        $user = auth()->user();
 
-        try {
-            $result = $this->userService->followUser($followerId, $followedId);
-
-            if (!$result) {
-                return response()->json([
-                    'message' => 'Você já segue este usuário ou está tentando seguir a si mesmo'
-                ], 400);
-            }
-
-            return response()->json([
-                'message' => 'Usuário seguido com sucesso',
-                'data' => $result
-            ]);
-
-        } catch (\Exception $e) {
-            return response()->json([
-                'message' => 'Erro ao seguir usuário',
-                'error' => $e->getMessage()
-            ], 500);
+        if ($user->id == $id) {
+            return response()->json(['message' => 'Você não pode seguir a si mesmo.'], 400);
         }
+
+        if ($user->following()->where('followed_id', $id)->exists()) {
+            return response()->json(['message' => 'Você já segue este usuário.'], 400);
+        }
+
+        $user->following()->attach($id);
+
+        return response()->json(['message' => 'Seguindo com sucesso.']);
     }
-    public function unfollow(Request $request, $id)
+
+    public function unfollow($id)
     {
-        $followerId = auth()->id();
-        $followedId = $id;
-        $result = $this->userService->unfollowUser($followerId, $followedId);
-        return response()->json([
-            'message' => 'Deixou de seguir este usuário com sucesso'
-        ]);
+        $user = auth()->user();
+
+        if (!$user->following()->where('followed_id', $id)->exists()) {
+            return response()->json(['message' => 'Você não segue este usuário.'], 400);
+        }
+
+        $user->following()->detach($id);
+
+        return response()->json(['message' => 'Deixou de seguir com sucesso.']);
     }
-    public function following($id)
-    {
-        $following = $this->userService->getFollowing($id);
-        return response()->json(['following' => $following]);
-    }
+
     public function followers($id)
     {
-        $followers = $this->userService->getFollowers($id);
-        return response()->json(['followers' => $followers]);
+        $user = User::findOrFail($id);
+        return response()->json($user->followers);
     }
+
+    public function following($id)
+    {
+        $user = User::findOrFail($id);
+        return response()->json($user->following);
+    }
+
 }
